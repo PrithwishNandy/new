@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year, My Love</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* The Flashback "Ken Burns" slow zoom effect */
+        .image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background-color: #333; /* Dark grey background if image loads slow */
+        }
+
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1);
+            filter: brightness(0.7); /* Darkens image slightly so text pops */
+        }
+
+        .active .slide-image {
+            animation: kenburns 10s linear forwards;
+        }
+
+        @keyframes kenburns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        .message-box {
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 80px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 1s ease-out 0.5s; /* Delay text slightly */
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .active .message-box {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px #000;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Final Screen Styling */
+        #final-screen {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ff512f, #dd2476);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        #final-screen h1 {
+             font-size: 3rem;
+             margin-bottom: 20px;
+        }
+
+        /* ERROR MESSAGE STYLING */
+        .error-msg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: red;
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            z-index: 100;
+            text-align: center;
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        </div>
+
+    <div id="final-screen">
+        <h1>Happy New Year!</h1>
+        <p>I love you more than words can say.</p>
+        <p>Here's to another amazing year together.</p>
+        <div style="font-size: 4rem; margin-top: 30px;">❤️🎆💑</div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // If your images are failing, the website will now tell you exactly why.
+        const slidesData = [
+          {
+                img: "20250401_084936.jpg", 
+                title: "My Favorite Story",
+                msg: "As the year ends, I'm looking back at our beautiful story..."
+            },
+            {
+                img: "IMG20230529160443.jpg",
+                title: "Your Smile",
+                msg: "This smile is the only light I need for the New Year."
+            },
+            {
+                img: "20250906_160051.jpg", 
+                title: "By Your Side",
+                msg: "Walking through life with you is my greatest adventure."
+            },
+            {
+                img: "IMG20230529160339.jpg", 
+                title: "Peaceful Moments",
+                msg: "I love every version of you. Even the sleepy ones."
+            },
+            {
+                img: "20250331_202845.jpg", 
+                title: "Forever Us",
+                msg: "Let's make 2026 even more magical than the anime world."
+            }
+        ];
+
+        const container = document.getElementById('container');
+        const finalScreen = document.getElementById('final-screen');
+        let currentSlide = 0;
+        const slideDuration = 5000; // 5 seconds per slide
+
+        // 1. Create Slide Elements dynamically
+        slidesData.forEach((data, index) => {
+            let slideDiv = document.createElement('div');
+            slideDiv.className = index === 0 ? 'slide active' : 'slide';
+            
+            // Note the 'onerror' part below - this catches broken images!
+            slideDiv.innerHTML = `
+                <div class="image-container">
+                    <img src="${data.image}" class="slide-image" alt="Memory" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'error-msg\\' style=\\'display:block\\'>⚠️ Missing File:<br>${data.image}</div>'">
+                </div>
+                <div class="message-box">
+                    <p>${data.text}</p>
+                </div>
+            `;
+            container.appendChild(slideDiv);
+        });
+
+        const slides = document.querySelectorAll('.slide');
+
+        // 2. The Animation Loop
+        function nextSlide() {
+            // Remove active class from current
+            slides[currentSlide].classList.remove('active');
+            
+            // Move to next
+            currentSlide++;
+
+            if (currentSlide < slides.length) {
+                // Show next slide
+                slides[currentSlide].classList.add('active');
+            } else {
+                // End of slideshow -> Show Final Screen
+                clearInterval(slideInterval);
+                // Hide the container so the slides are gone
+                container.style.display = 'none';
+                // Show the pink/red final screen
+                finalScreen.style.display = 'flex';
+            }
+        }
+
+        // Start the slideshow timer
+        let slideInterval = setInterval(nextSlide, slideDuration);
+
+    </script>
+</body>
+</html>

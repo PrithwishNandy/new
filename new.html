@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year Love</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Text at bottom */
+            align-items: center;
+            background-color: #1a1a1a; /* Dark background if image fails */
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        /* The Flashback Animation */
+        .image-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures photo covers screen without stretching */
+            transform: scale(1);
+            filter: brightness(0.65); /* Darkens photo so text is readable */
+        }
+
+        .active .slide-image {
+            animation: kenburns 7s linear forwards;
+        }
+
+        @keyframes kenburns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        /* Text Styling */
+        .text-overlay {
+            color: white;
+            text-align: center;
+            margin-bottom: 20%;
+            padding: 20px;
+            max-width: 85%;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 1s ease-out 0.5s;
+        }
+
+        .active .text-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #ffecd2;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.4;
+        }
+
+        /* Final Card Design */
+        #final-screen {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: white;
+            color: #764ba2;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        </div>
+
+    <div id="final-screen">
+        <h1 style="font-size: 3.5rem; margin-bottom:10px;">2026</h1>
+        <h2 style="font-size: 1.5rem;">Happy New Year!</h2>
+        <p style="margin-top: 20px;">You are my favorite flashback<br>and my favorite future.</p>
+        <button onclick="location.reload()">Watch Again ↻</button>
+    </div>
+
+    <script>
+        // THESE ARE YOUR EXACT FILENAMES. 
+        // DO NOT CHANGE THEM UNLESS YOU RENAME THE FILES ON YOUR COMPUTER.
+        const slides = [
+            {
+                img: "20250401_084936.jpg", 
+                title: "My Favorite Story",
+                msg: "As the year ends, I'm looking back at our beautiful story..."
+            },
+            {
+                img: "IMG20230529160443.jpg",
+                title: "Your Smile",
+                msg: "This smile is the only light I need for the New Year."
+            },
+            {
+                img: "20250906_160051.jpg", 
+                title: "By Your Side",
+                msg: "Walking through life with you is my greatest adventure."
+            },
+            {
+                img: "IMG20230529160339.jpg", 
+                title: "Peaceful Moments",
+                msg: "I love every version of you. Even the sleepy ones."
+            },
+            {
+                img: "20250331_202845.jpg", 
+                title: "Forever Us",
+                msg: "Let's make 2026 even more magical than the anime world."
+            }
+        ];
+
+        const container = document.getElementById('container');
+        const finalScreen = document.getElementById('final-screen');
+        let currentIndex = 0;
+        const slideTime = 6000; // 6 seconds per photo
+
+        // Initialize Slides
+        slides.forEach((slide, index) => {
+            const slideDiv = document.createElement('div');
+            slideDiv.className = index === 0 ? 'slide active' : 'slide';
+            slideDiv.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="${slide.img}" class="slide-image" onerror="this.style.display='none'">
+                </div>
+                <div class="text-overlay">
+                    <h2>${slide.title}</h2>
+                    <p>${slide.msg}</p>
+                </div>
+            `;
+            container.appendChild(slideDiv);
+        });
+
+        const slideElements = document.querySelectorAll('.slide');
+
+        function nextSlide() {
+            // Remove active class from current
+            slideElements[currentIndex].classList.remove('active');
+            
+            currentIndex++;
+
+            if (currentIndex < slideElements.length) {
+                // Show next slide
+                slideElements[currentIndex].classList.add('active');
+            } else {
+                // Show final screen
+                clearInterval(interval);
+                finalScreen.style.display = 'flex';
+            }
+        }
+
+        // Start Timer
+        const interval = setInterval(nextSlide, slideTime);
+
+    </script>
+</body>
+</html>
